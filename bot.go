@@ -28,15 +28,24 @@ func main() {
     updates, err := bot.GetUpdatesChan(u)
 
     for update := range updates {
-        if update.Message == nil { // ignore any non-Message Updates
+        if update.Message == nil {
             continue
         }
 
         log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-        msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-        msg.ReplyToMessageID = update.Message.MessageID
+        if update.Message.IsCommand() {
+            msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+            switch update.Message.Command() {
+            case "help":
+                msg.Text = "type /m or /help for this message"
+            case "m":
+                msg.Text = "retrieving your time attendance from today"
+            default:
+                msg.Text = "I don't know that command"
+            }
+            bot.Send(msg)
+        }
 
-        bot.Send(msg)
     }
 }
