@@ -96,11 +96,11 @@ func main() {
         if update.Message.IsCommand() {
             msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
             switch update.Message.Command() {
-            case "help":
+            case "help","h":
                 msg.Text = usageMessage()
             case "m":
                 msg.Text = "retrieving your time attendance from today"
-            case "luz","l":
+            case "luz","l","light":
                 msg.Text = lightCommand(update.Message.Text)
             default:
                 msg.Text = usageMessage()
