@@ -38,9 +38,11 @@ func main() {
             msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
             switch update.Message.Command() {
             case "help":
-                msg.Text = "type /m or /help for this message"
+                msg.Text = "/m tus marcadas\n/luz prender o apagar la luz\n/help este mensaje"
             case "m":
                 msg.Text = "retrieving your time attendance from today"
+            case "luz":
+                msg.Text = "switching lights on or off"
             default:
                 msg.Text = "I don't know that command"
             }
