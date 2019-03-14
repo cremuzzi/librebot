@@ -15,28 +15,36 @@ func getEnv(key, fallback string) string {
     return fallback
 }
 
-func handleLuzAction(theMessage string) string {
+func usageMessage() string {
+    return "USO:\n/luz prender o apagar la luz\n/help este mensaje"
+}
+
+func lightCommand(theMessage string) string {
     msgArgs := strings.Fields(theMessage)
     var action string
+    var response string
     if len(msgArgs) < 3 {
         return "falta especificar el numero de la sala y la accion\nejemplo: /luz 41 off"
     }
     switch msgArgs[2] {
-        case "ON","on","On","oN","1":
+        case "ON","on","On","1":
             action = "1"
+            response = "prendiendo la luz"
         case "OFF","off","Off","0":
             action = "0"
+            response = "apagando la luz"
         default:
             return "la accion tiene que ser on o off\nejemplo: /luz 41 off"
-    } 
+    }
     lightSwitcher(msgArgs[1], action)
-    return "cambiando la luz"
+
+    return response
 }
 
 func lightSwitcher(roomid string, msg string) {
     var topic string = "l/"+roomid+"/s"
     var broker string = getEnv("MQTT_BROKER","tcp://iot.eclipse.org:1883")
- 
+
     log.Printf("broker %s", broker)
     log.Printf("topic %s", topic)
     log.Printf("msg %s", msg)
@@ -89,13 +97,13 @@ func main() {
             msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
             switch update.Message.Command() {
             case "help":
-                msg.Text = "/m tus marcadas\n/luz prender o apagar la luz\n/help este mensaje"
+                msg.Text = usageMessage()
             case "m":
                 msg.Text = "retrieving your time attendance from today"
-            case "luz":
-                msg.Text = handleLuzAction(update.Message.Text)
+            case "luz","l":
+                msg.Text = lightCommand(update.Message.Text)
             default:
-                msg.Text = "I don't know that command"
+                msg.Text = usageMessage()
             }
             bot.Send(msg)
         }
