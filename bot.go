@@ -19,13 +19,20 @@ func usageMessage() string {
     return "USO:\n/luz prender o apagar la luz\n/help este mensaje"
 }
 
-func lightCommand(theMessage string) string {
+func lightCommand(theMessage string, username string) string {
     msgArgs := strings.Fields(theMessage)
     var action string
     var response string
     if len(msgArgs) < 3 {
         return "falta especificar el numero de la sala y la accion\nejemplo: /luz 41 off"
     }
+
+    log.Printf("running command for user %s", username)
+    /*
+    * here it should find out if the user is known to the app (is found on a DB)
+    * and if they have authorization for that specific light (1-to-N)
+    * a user could be assigned to its own office plus the meeting rooms
+    */
     switch msgArgs[2] {
         case "ON","on","On","1":
             action = "1"
@@ -77,7 +84,7 @@ func main() {
         log.Panic(err)
     }
 
-    bot.Debug = true
+    bot.Debug = false
 
     log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -101,7 +108,7 @@ func main() {
             case "m":
                 msg.Text = "retrieving your time attendance from today"
             case "luz","l","light":
-                msg.Text = lightCommand(update.Message.Text)
+                msg.Text = lightCommand(update.Message.Text,update.Message.From.UserName)
             default:
                 msg.Text = usageMessage()
             }
